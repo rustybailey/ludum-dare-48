@@ -6,7 +6,12 @@ function change_scene(scene)
 end
 
 function make_scene(options)
-  local o = {init = options.init, update = options.update, draw = options.draw}
+  local o = {
+    init = options.init,
+    update = options.update,
+    draw = options.draw,
+    after_draw = options.after_draw,
+  }
 
   local scene = {
     init = function(self)
@@ -45,6 +50,9 @@ function make_scene(options)
         if (object.draw) then
           object:draw()
         end
+      end
+      if (o.after_draw) then
+        o.after_draw(self)
       end
     end
   }
