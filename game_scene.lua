@@ -43,9 +43,9 @@ player_sprites = {
 
 function make_player()
   return {
-    x = 0,
+    x = 3,
     y = 0,
-    pos = vector{0,0},
+    pos = vector{3,0},
     dx = 0,
     dy = 0,
     strength = 1,
@@ -95,6 +95,7 @@ local tiles = {
   {
     strength = 1,
     type = 'dirt',
+    color = 4,
     sprites = {
       192
     }
@@ -102,6 +103,7 @@ local tiles = {
   {
     strength = 2,
     type = 'gravel',
+    color = 6,
     sprites = {
       226,
       194
@@ -110,6 +112,7 @@ local tiles = {
   {
     strength = 3,
     type = 'rock',
+    color = 5,
     sprites = {
       200,
       198,
@@ -124,6 +127,7 @@ function make_tile(o)
     strength = tile.strength,
     x = o.x,
     y = o.y,
+    color = tile.color,
     sprites = tile.sprites,
     draw = function(self)
       spr(self.sprites[flr(self.strength)], self.x * 16, self.y * 16, 2, 2)
@@ -134,13 +138,15 @@ function make_tile(o)
   }
 end
 
-tiles_below = 5
+tiles_below = 4
 
 game_scene = make_scene({
   music = 4,
   init = function(self)
     self.player = make_player()
     self.tile_map = {}
+    self.count_down = 100
+    self.frame=1
 
     for x=0,7 do
       for y=1,tiles_below do
@@ -167,11 +173,11 @@ game_scene = make_scene({
     end
     if (hit_tile) then
       self.player:dig(x,y)
+      local dust_y = y * 16
       if (hit_tile.strength <= 0) then
-        make_dust(self, x * 16 + 8, y * 16 + 16)
-      else
-        make_dust(self, x * 16 + 8, y * 16)
+        dust_y += 16
       end
+      make_dust(self, x * 16 + 8, dust_y, hit_tile.color)
     end
 
     if (hit_tile == nil or hit_tile.strength <= 0) then
@@ -179,6 +185,11 @@ game_scene = make_scene({
     end
   end,
   update = function(self)
+    self.frame += 1
+    self.frame = self.frame % 60
+    if (self.frame == 0) then
+      self.count_down -= 1
+    end
     if (btnp(1) and self.player.x < 7) then
       self:try_move(self.player.x + 1, self.player.y)
     elseif (btnp(0) and self.player.x > 0) then
@@ -204,6 +215,14 @@ game_scene = make_scene({
   after_draw = function(self)
     self.player:draw()
     camera(0,0)
-    print(self.player.y, 2,2, 11)
+    rectfill(0,0,screen_width, 16, 1)
+    print("meters", 2,2, 7)
+    print(self.player.y, 2,9, 7)
+    local count_down_offset = (2 * 4)
+    if (self.count_down >= 100) then
+      count_down_offset += 4
+    end
+    print('time', screen_width - (4 * 4) - 1,2, 7)
+    print(self.count_down, screen_width - count_down_offset - 1,9, 7)
   end
 })

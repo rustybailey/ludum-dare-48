@@ -1,6 +1,7 @@
-function make_dust(scene, x, y)
+function make_dust(scene, x, y, color)
 	local make_particle = function(x, y)
-		local particle_colors = { 4,5,6, 7 }
+		local particle_colors = { 7, 5, 6 }
+		add(particle_colors, color)
 		local particle = {
 			x = x - 4 + flr(rnd(4)),
 			y = y + flr(rnd(4)),
