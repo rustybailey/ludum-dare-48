@@ -1,5 +1,5 @@
 title_scene = make_scene({
-  music = 4, -- create title music and add here
+  -- music = 0, -- calling music after player lands
   player_spin_sprites = {
     99,
     101,
@@ -18,17 +18,31 @@ title_scene = make_scene({
     x = 10,
     y = -10
   },
-  player_target_y = 100,
+  player_target_y = 96,
   has_hit_target_y = false,
   minecart = {
     pos_x = 10,
-    pos_y = 100,
+    pos_y = 96,
     is_visible = true,
   },
   player_x_dir = 1,
   minecart_anim_counter = 1,
   current_minecart_index = 1,
   is_riding_minecart = false,
+  tile_sprites = {
+    192,
+    226,
+    194,
+    200,
+    198,
+    196,
+    206,
+    204,
+    202,
+    230,
+    228
+  },
+  tiles = {},
   set_next_spin_sprite = function(self)
     self.spin_counter += 1
     if (self.spin_counter < 8) then return end
@@ -47,7 +61,7 @@ title_scene = make_scene({
     -- move right, if it hits the limit, flip sprite and start moving left
     local boundaries = {
       left = 10,
-      right = 110
+      right = 102
     }
 
     if self.player_pos.x > boundaries.right or self.player_pos.x < boundaries.left then
@@ -66,12 +80,30 @@ title_scene = make_scene({
     end
     self.player_current_sprite = self.player_minecart_sprites[sprite_index]
   end,
+  make_tile = function(self, o)
+    local tile_sprite = random_one(self.tile_sprites)
+    return {
+      x = o.x,
+      y = o.y,
+      sprite = tile_sprite,
+      flip_x = rnd(1) < 0.5,
+      flip_y = rnd(1) < 0.5,
+      draw = function(self)
+        spr(self.sprite, self.x * 16, self.y * 16, 2, 2, self.flip_x, self.flip_y)
+      end
+    }
+  end,
+  initialize_tiles = function(self)
+    for x=0,7 do
+      local tile = self:make_tile({x = x, y = 7})
+      add(self.tiles, tile)
+    end
+  end,
   init = function(self)
     sfx(10)
+    self:initialize_tiles()
   end,
   update = function(self)
-
-
     if (not self.is_riding_minecart) then
       self.player_pos.y += 2
       self:set_next_spin_sprite()
@@ -80,9 +112,15 @@ title_scene = make_scene({
       self:ride_minecart()
     end
 
-    if (self.player_pos.y == self.player_target_y - 2) then
+    if (self.player_pos.y == self.player_target_y and not self.is_riding_minecart) then
       music(0)
       self.is_riding_minecart = true
+    end
+
+    if self.is_riding_minecart then
+      if btnp(4) or btnp(5) then
+        change_scene(game_scene)
+      end
     end
   end,
   draw = function(self)
@@ -93,7 +131,21 @@ title_scene = make_scene({
 
     -- draw minecart
     if self.minecart.is_visible then
-      spr(163, 10, 100, 2, 2)
+      spr(163, 10, 96, 2, 2)
+    end
+
+    -- draw ground
+    for i=1,#self.tiles do
+      self.tiles[i]:draw()
+    end
+
+    -- draw title once player is riding minecart
+    if self.is_riding_minecart then
+      -- todo: design actual logo sprite
+      center_print("dig it!", 40, 10)
+
+      -- todo: blink text
+      center_print("press z or x to start", screen_width / 2, 7)
     end
   end
 })
