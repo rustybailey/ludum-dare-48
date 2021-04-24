@@ -12,8 +12,6 @@ function make_player()
     move = function(self, x, y)
       self.x = x
       self.y = y
-      self.x = max(self.x, 0)
-      self.x = min(self.x, screen_width - 16)
     end,
     draw = function(self)
       spr(1, self.x * 16, self.y * 16, 2, 2)
@@ -94,9 +92,9 @@ game_scene = make_scene({
     end
   end,
   update = function(self)
-    if (btnp(1)) then
+    if (btnp(1) and self.player.x < 7) then
       self:try_move(self.player.x + 1, self.player.y)
-    elseif (btnp(0)) then
+    elseif (btnp(0) and self.player.x > 0) then
       self:try_move(self.player.x - 1, self.player.y)
     elseif (btnp(3)) then
       self:try_move(self.player.x, self.player.y + 1)
