@@ -6,10 +6,11 @@ __lua__
 #include utils.lua
 #include scene.lua
 #include main_scene.lua
+#include jon_scene.lua
 
 
 function _init()
-  change_scene(main_scene)
+  change_scene(jon_scene)
   current_scene:init()
 end
 
