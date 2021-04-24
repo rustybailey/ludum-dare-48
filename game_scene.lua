@@ -41,6 +41,21 @@ player_sprites = {
   }
 }
 
+local tools = {
+  shovel = {
+    strength = 1,
+    toolbar_sprite = 138
+  },
+  pickaxe = {
+    strength = 2,
+    toolbar_sprite = 140
+  },
+  drill = {
+    strength = 3,
+    toolbar_sprite = 139
+  }
+}
+
 function make_player()
   return {
     x = 3,
@@ -48,7 +63,7 @@ function make_player()
     pos = vector{3,0},
     dx = 0,
     dy = 0,
-    strength = 1,
+    tool = tools.shovel,
     sprite = player_sprites.idle[1],
     dig_counter = 0,
     flip_x = false,
@@ -228,7 +243,7 @@ game_scene = make_scene({
   try_move = function(self, x, y)
     local hit_tile = self.tile_map[x][y]
     if (hit_tile) then
-      hit_tile.strength -= self.player.strength
+      hit_tile.strength -= self.player.tool.strength
       if (hit_tile.strength <= 0) then
         if (hit_tile.gold_amount) then
           self.gold_amount += hit_tile.gold_amount
@@ -285,10 +300,15 @@ game_scene = make_scene({
 
     print("meters", 2,2, 7)
     print(self.player.y, 2,9, 7)
+    
+    local tool_x = (6*4) + 4
+    spr(self.player.tool.toolbar_sprite, tool_x, 1)
 
-    local gold_x = (6*4) + 8
-    spr(154,gold_x,2)
+    local gold_x = tool_x + 10
+    spr(141,gold_x,1)
     print(self.gold_amount, gold_x+7,2, 7)
+
+
 
     local count_down_offset = (2 * 4)
     if (self.count_down >= 100) then
