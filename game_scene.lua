@@ -120,6 +120,7 @@ local tiles = {
     }
   },
   rock_gold = {
+    gold_amount = 15,
     rarity = 10,
     strength = 3,
     color = 10,
@@ -130,6 +131,7 @@ local tiles = {
     }
   },
   gravel_gold = {
+    gold_amount = 10,
     rarity = 5,
     strength = 2,
     color = 10,
@@ -188,6 +190,7 @@ function make_tile(o)
     sprites = tile.sprites,
     flip_x = rnd(1) < 0.5,
     flip_y = rnd(1) < 0.5,
+    gold_amount = tile.gold_amount,
     draw = function(self)
       spr(self.sprites[flr(self.strength)], self.x * 16, self.y * 16, 2, 2, self.flip_x, self.flip_y)
       if(show_coordinates) then
@@ -206,6 +209,7 @@ game_scene = make_scene({
     self.tile_map = {}
     self.count_down = 100
     self.frame=1
+    self.gold_amount = 0
 
     for x=0,7 do
       for y=1,tiles_below do
@@ -226,6 +230,9 @@ game_scene = make_scene({
     if (hit_tile) then
       hit_tile.strength -= self.player.strength
       if (hit_tile.strength <= 0) then
+        if (hit_tile.gold_amount) then
+          self.gold_amount += hit_tile.gold_amount
+        end
         self:remove(hit_tile)
         self.tile_map[x][y] = nil
       end
@@ -275,8 +282,14 @@ game_scene = make_scene({
     self.player:draw()
     camera(0,0)
     rectfill(0,0,screen_width, 16, 0)
+
     print("meters", 2,2, 7)
     print(self.player.y, 2,9, 7)
+
+    local gold_x = (6*4) + 8
+    spr(154,gold_x,2)
+    print(self.gold_amount, gold_x+7,2, 7)
+
     local count_down_offset = (2 * 4)
     if (self.count_down >= 100) then
       count_down_offset += 4
