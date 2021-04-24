@@ -111,10 +111,12 @@ game_scene = make_scene({
     end
   end,
   draw = function(self)
-    camera(0, (self.player.y * 16) - (8 - tiles_below - 1) * 16)
     cls(0)
+    camera(0, (self.player.y * 16) - (8 - tiles_below - 1) * 16)
   end,
   after_draw = function(self)
     self.player:draw()
+    camera(0,0)
+    print(self.player.y, 2,2, 11)
   end
 })
