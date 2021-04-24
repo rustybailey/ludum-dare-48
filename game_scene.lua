@@ -215,7 +215,7 @@ game_scene = make_scene({
   after_draw = function(self)
     self.player:draw()
     camera(0,0)
-    rectfill(0,0,screen_width, 16, 1)
+    rectfill(0,0,screen_width, 16, 0)
     print("meters", 2,2, 7)
     print(self.player.y, 2,9, 7)
     local count_down_offset = (2 * 4)
