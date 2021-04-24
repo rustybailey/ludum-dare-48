@@ -34,12 +34,13 @@ end
 game_scene = make_scene({
   music = 1,
   init = function(self)
-    local player = make_player()
-    self:add(player)
+    self.player = make_player()
+    self:add(self.player)
   end,
   update = function(self)
   end,
   draw = function(self)
+    camera(0, self.player.y - 48)
     cls(2)
   end
 })
