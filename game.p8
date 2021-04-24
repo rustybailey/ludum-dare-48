@@ -2,15 +2,14 @@ pico-8 cartridge // http://www.pico-8.com
 version 32
 __lua__
 
+#include globals.lua
 #include utils.lua
 #include scene.lua
 #include main_scene.lua
 
-screen_width = 128
-
-change_scene(main_scene)
 
 function _init()
+  change_scene(main_scene)
   current_scene:init()
 end
 
