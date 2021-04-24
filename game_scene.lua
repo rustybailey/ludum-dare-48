@@ -26,17 +26,26 @@ local tiles = {
   {
     strength = 1,
     type = 'dirt',
-    sprite = 192
+    sprites = {
+      192
+    }
   },
   {
     strength = 2,
     type = 'gravel',
-    sprite = 194
+    sprites = {
+      226,
+      194
+    }
   },
   {
     strength = 3,
     type = 'rock',
-    sprite = 196
+    sprites = {
+      200,
+      198,
+      196
+    }
   }
 }
 
@@ -46,16 +55,15 @@ function make_tile(o)
     strength = tile.strength,
     x = o.x,
     y = o.y,
-    sprite = tile.sprite,
+    sprites = tile.sprites,
     draw = function(self)
-      spr(self.sprite, self.x * 16, self.y * 16, 2, 2)
+      spr(self.sprites[flr(self.strength)], self.x * 16, self.y * 16, 2, 2)
       if(show_coordinates) then
         print(self.x..","..self.y, self.x * 16, self.y * 16, 8)
       end
     end
   }
 end
-
 
 tiles_below = 5
 
@@ -95,7 +103,7 @@ game_scene = make_scene({
         make_dust(self, x * 16 + 8, y * 16)
       end
     end
-    
+
     if (hit_tile == nil or hit_tile.strength <= 0) then
       self.player:move(x,y)
     end
