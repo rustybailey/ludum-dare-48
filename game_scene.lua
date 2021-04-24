@@ -92,45 +92,104 @@ function make_player()
 end
 
 local tiles = {
-  {
+  dirt = {
+    rarity = 150,
     strength = 1,
-    type = 'dirt',
     color = 4,
     sprites = {
       192
     }
   },
-  {
+  gravel = {
+    rarity = 40,
     strength = 2,
-    type = 'gravel',
     color = 6,
     sprites = {
       226,
       194
     }
   },
-  {
+  rock = {
+    rarity = 40,
     strength = 3,
-    type = 'rock',
     color = 5,
     sprites = {
       200,
       198,
       196
     }
+  },
+  rock_gold = {
+    rarity = 10,
+    strength = 3,
+    color = 10,
+    sprites = {
+      206,
+      204,
+      202
+    }
+  },
+  gravel_gold = {
+    rarity = 5,
+    strength = 2,
+    color = 10,
+    sprites = {
+      230,
+      228
+    }
   }
 }
 
+debug_rarity = false
+rarity_called = false
+function choose_tile()
+  if (debug_rarity and rarity_called) then
+    return tiles.dirt
+  end
+
+  local total_rarity = 0
+  
+  for k, tile in pairs(tiles) do
+    total_rarity += tile.rarity
+  end
+
+  percent_remaing = 100
+  for k, tile in pairs(tiles) do
+    local tile_occurence_percent = (tile.rarity / total_rarity) * 100
+    tile.roll_hit = 100 - percent_remaing + tile_occurence_percent
+    percent_remaing -= tile_occurence_percent
+    if (debug_rarity) then
+      printh(k..".) rarity: "..tile.rarity..", roll_hit:"..tile.roll_hit..", rem:"..percent_remaing)
+    end
+  end
+
+  local roll = rnd(100)
+
+  local lowest_roll_hit = 100
+  local current_tile = tiles.dirt
+  for k, tile in pairs(tiles) do
+    if (roll <= tile.roll_hit and tile.roll_hit < lowest_roll_hit) then
+      current_tile = tile
+      lowest_roll_hit = tile.roll_hit
+    end
+  end
+
+  rarity_called = true
+  return current_tile
+end
+
 function make_tile(o)
-  local tile = random_one(tiles)
+  local tile = choose_tile()
   return {
     strength = tile.strength,
     x = o.x,
     y = o.y,
     color = tile.color,
     sprites = tile.sprites,
+    flip_x = rnd(1) < 0.5,
+    flip_y = rnd(1) < 0.5,
     draw = function(self)
-      spr(self.sprites[flr(self.strength)], self.x * 16, self.y * 16, 2, 2)
+      spr(self.sprites[flr(self.strength)], self.x * 16, self.y * 16, 2, 2, self.flip_x, self.flip_y)
       if(show_coordinates) then
         print(self.x..","..self.y, self.x * 16, self.y * 16, 8)
       end
