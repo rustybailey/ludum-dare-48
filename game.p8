@@ -14,7 +14,7 @@ function _init()
   current_scene:init()
 end
 
-function _update()
+function _update60()
   current_scene:update()
 end
 

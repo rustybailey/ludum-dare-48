@@ -6,14 +6,14 @@ function make_dust(scene, x, y)
 			y = y + flr(rnd(4)),
 			width = 1 + flr(rnd(2)),
 			color = random_one(particle_colors),
-			counter = 5 + flr(rnd(8)),
+			counter = 10 + flr(rnd(10)),
 			dx = flr(rnd(4)) - 2,
 			dy = flr(rnd(2)) - 3,
 			dwidth = flr(rnd(3)) - 1,
 			update = function(self)
-				self.x += self.dx
-				self.y += self.dy
-				self.width += self.dwidth
+				self.x += self.dx / 2
+				self.y += self.dy / 2
+				self.width += self.dwidth / 2 
 				self.counter -= 1
 				if (self.counter <= 0) then
 					scene:remove(self)
