@@ -85,8 +85,17 @@ game_scene = make_scene({
       hit_tile.strength -= self.player.strength
       if (hit_tile.strength <= 0) then
         self:remove(hit_tile)
+        self.tile_map[x][y] = nil
       end
     end
+    if (hit_tile) then
+      if (hit_tile.strength <= 0) then
+        make_dust(self, x * 16 + 8, y * 16 + 16)
+      else
+        make_dust(self, x * 16 + 8, y * 16)
+      end
+    end
+    
     if (hit_tile == nil or hit_tile.strength <= 0) then
       self.player:move(x,y)
     end

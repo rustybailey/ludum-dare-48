@@ -5,6 +5,7 @@ __lua__
 #include globals.lua
 #include utils.lua
 #include scene.lua
+#include particles.lua
 #include game_scene.lua
 
 
