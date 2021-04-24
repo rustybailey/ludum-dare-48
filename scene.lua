@@ -6,11 +6,7 @@ function change_scene(scene)
 end
 
 function make_scene(options)
-  local o = {
-    init = options.init,
-    update = options.update,
-    draw = options.draw
-  }
+  local o = {init = options.init, update = options.update, draw = options.draw}
 
   local scene = {
     init = function(self)

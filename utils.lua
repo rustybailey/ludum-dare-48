@@ -5,7 +5,7 @@ function center_print(message, y, color)
 end
 
 function merge_tables(a, b)
-  for k,v in pairs(b) do
+  for k, v in pairs(b) do
     a[k] = v
   end
   return a

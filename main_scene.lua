@@ -7,6 +7,6 @@ main_scene = make_scene({
   draw = function(self)
     cls()
 
-    center_print("ludum dare 48!!", screen_width/2, 7)
+    center_print("ludum dare 48!!", screen_width / 2, 7)
   end
 })
