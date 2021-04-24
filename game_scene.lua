@@ -72,6 +72,7 @@ function make_player()
     dig = function(self,x,y)
       local next_pos = vector{x,y}
       self.dig_direction = vector_direction(next_pos - self.pos)
+      self.digging = true
       self.dig_counter = 1
       self.dig_sprites = player_sprites.dig[self.dig_direction]
       if (self.dig_direction == "left") then
@@ -93,6 +94,7 @@ function make_player()
         local frame = max(1,ceil(ratio * self.dig_counter))
         self.sprite = self.dig_sprites[frame]
       else
+        self.digging = false
         self.flip_x = false
         self.sprite = 1
       end
@@ -240,7 +242,21 @@ game_scene = make_scene({
 
     self:add(self.player)
   end,
-  try_move = function(self, x, y)
+  try_move = function(self)
+    if (self.player.digging) then
+      return
+    end
+
+    if (self.requested_move == nil) then
+      return
+    end
+
+    local new_pos = self.requested_move + self.player.pos
+    local x = new_pos.x
+    local y = new_pos.y
+
+    self.requested_move = nil
+
     local hit_tile = self.tile_map[x][y]
     if (hit_tile) then
       hit_tile.strength -= self.player.tool.strength
@@ -272,12 +288,13 @@ game_scene = make_scene({
       self.count_down -= 1
     end
     if (btnp(1) and self.player.x < 7) then
-      self:try_move(self.player.x + 1, self.player.y)
+      self.requested_move = direction_right
     elseif (btnp(0) and self.player.x > 0) then
-      self:try_move(self.player.x - 1, self.player.y)
+      self.requested_move = direction_left
     elseif (btnp(3)) then
-      self:try_move(self.player.x, self.player.y + 1)
+      self.requested_move = direction_down
     end
+    self:try_move()
 
     if (self.player.y + tiles_below == self.last_tile_placed.y) then
       local y = self.last_tile_placed.y + 1
