@@ -137,7 +137,7 @@ end
 tiles_below = 5
 
 game_scene = make_scene({
-  music = 1,
+  music = 4,
   init = function(self)
     self.player = make_player()
     self.tile_map = {}
