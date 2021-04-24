@@ -26,6 +26,7 @@ title_scene = make_scene({
     is_visible = true,
   },
   player_x_dir = 1,
+  start_game_text_blink = 1,
   minecart_anim_counter = 1,
   current_minecart_index = 1,
   is_riding_minecart = false,
@@ -121,6 +122,9 @@ title_scene = make_scene({
       if btnp(4) or btnp(5) then
         change_scene(game_scene)
       end
+
+      self.start_game_text_blink += 1
+      if self.start_game_text_blink > 60 then self.start_game_text_blink = 1 end
     end
   end,
   draw = function(self)
@@ -144,8 +148,9 @@ title_scene = make_scene({
       -- todo: design actual logo sprite
       center_print("dig it!", 40, 10)
 
-      -- todo: blink text
-      center_print("press z or x to start", screen_width / 2, 7)
+      if self.start_game_text_blink > 30 then
+        center_print("press z or x to start", screen_width / 2, 7)
+      end
     end
   end
 })
