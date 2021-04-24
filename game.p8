@@ -5,12 +5,11 @@ __lua__
 #include globals.lua
 #include utils.lua
 #include scene.lua
-#include main_scene.lua
-#include jon_scene.lua
+#include game_scene.lua
 
 
 function _init()
-  change_scene(jon_scene)
+  change_scene(game_scene)
   current_scene:init()
 end
 

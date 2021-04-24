@@ -1,4 +1,4 @@
-main_scene = make_scene({
+game_scene = make_scene({
   music = 1,
   init = function(self)
   end,
@@ -7,6 +7,6 @@ main_scene = make_scene({
   draw = function(self)
     cls()
 
-    center_print("ludum dare 48!!", screen_width / 2, 7)
+    center_print("game scene", screen_width / 2, 7)
   end
 })
