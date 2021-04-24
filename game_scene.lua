@@ -31,10 +31,47 @@ function make_player()
   }
 end
 
+local tiles = {
+  {
+    type = 'dirt',
+    sprite = 192
+  },
+  {
+    type = 'gravel',
+    sprite = 194
+  },
+  {
+    type = 'rock',
+    sprite = 196
+  }
+}
+
+function make_tile(o)
+  local tile = random_one(tiles)
+  return {
+    x = o.x,
+    y = o.y,
+    sprite = tile.sprite,
+    draw = function(self)
+      spr(self.sprite, self.x, self.y, 2, 2)
+    end
+  }
+end
+
+local tile_map = {}
+
 game_scene = make_scene({
   music = 1,
   init = function(self)
     self.player = make_player()
+
+    for i=0,7 do
+      for j=0,4 do 
+        local tile = make_tile({x = i*16, y = 16+ j*16})
+        self:add(tile)
+      end
+    end
+
     self:add(self.player)
   end,
   update = function(self)

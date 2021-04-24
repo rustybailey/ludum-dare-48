@@ -10,3 +10,7 @@ function merge_tables(a, b)
   end
   return a
 end
+
+function random_one(set)
+	return set[1 + flr(rnd(count(set)))]
+end
