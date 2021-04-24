@@ -1,46 +1,42 @@
+show_coordinates = false
+
 function make_player()
   return {
     x = 0,
     y = 0,
     dx = 0,
     dy = 0,
+    strength = 1,
     init = function(self)
     end,
-    update = function(self)
-      if (btnp(1)) then
-        self.dx = 1
-      elseif (btnp(0)) then
-        self.dx = -1
-      else
-        self.dx = 0
-      end
-      if (btnp(3)) then
-        self.dy = 1
-      else
-        self.dy = 0
-      end
-      self.x += self.dx
-      self.y += self.dy
-
+    move = function(self, x, y)
+      self.x = x
+      self.y = y
       self.x = max(self.x, 0)
       self.x = min(self.x, screen_width - 16)
     end,
     draw = function(self)
       spr(1, self.x * 16, self.y * 16, 2, 2)
+      if(show_coordinates) then
+        print(self.x..","..self.y, self.x * 16, self.y * 16, 8)
+      end
     end
   }
 end
 
 local tiles = {
   {
+    strength = 1,
     type = 'dirt',
     sprite = 192
   },
   {
+    strength = 2,
     type = 'gravel',
     sprite = 194
   },
   {
+    strength = 3,
     type = 'rock',
     sprite = 196
   }
@@ -49,11 +45,15 @@ local tiles = {
 function make_tile(o)
   local tile = random_one(tiles)
   return {
+    strength = tile.strength,
     x = o.x,
     y = o.y,
     sprite = tile.sprite,
     draw = function(self)
       spr(self.sprite, self.x * 16, self.y * 16, 2, 2)
+      if(show_coordinates) then
+        print(self.x..","..self.y, self.x * 16, self.y * 16, 8)
+      end
     end
   }
 end
@@ -67,13 +67,13 @@ game_scene = make_scene({
     self.player = make_player()
     self.tile_map = {}
 
-    for i=0,7 do
-      for j=0,tiles_below do
-        if (self.tile_map[i] == nil) then
-          self.tile_map[i] = {}
+    for x=0,7 do
+      for y=1,tiles_below do
+        if (self.tile_map[x] == nil) then
+          self.tile_map[x] = {}
         end
-        local tile = make_tile({x = i, y = 1 + j})
-        self.tile_map[i][j] = tile
+        local tile = make_tile({x = x, y = y})
+        self.tile_map[x][y] = tile
         self:add(tile)
         self.last_tile_placed = tile
       end
@@ -81,7 +81,27 @@ game_scene = make_scene({
 
     self:add(self.player)
   end,
+  try_move = function(self, x, y)
+    local hit_tile = self.tile_map[x][y]
+    if (hit_tile) then
+      hit_tile.strength -= self.player.strength
+      if (hit_tile.strength <= 0) then
+        self:remove(hit_tile)
+      end
+    end
+    if (hit_tile == nil or hit_tile.strength <= 0) then
+      self.player:move(x,y)
+    end
+  end,
   update = function(self)
+    if (btnp(1)) then
+      self:try_move(self.player.x + 1, self.player.y)
+    elseif (btnp(0)) then
+      self:try_move(self.player.x - 1, self.player.y)
+    elseif (btnp(3)) then
+      self:try_move(self.player.x, self.player.y + 1)
+    end
+
     if (self.player.y + tiles_below == self.last_tile_placed.y) then
       local y = self.last_tile_placed.y + 1
       for x=0,7 do
@@ -94,7 +114,7 @@ game_scene = make_scene({
   end,
   draw = function(self)
     camera(0, (self.player.y * 16) - (8 - tiles_below - 1) * 16)
-    cls(2)
+    cls(0)
   end,
   after_draw = function(self)
     self.player:draw()
