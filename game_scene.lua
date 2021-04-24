@@ -44,15 +44,15 @@ player_sprites = {
 local tools = {
   shovel = {
     strength = 1,
-    toolbar_sprite = 138
+    toolbar_sprite = 80
   },
   pickaxe = {
     strength = 2,
-    toolbar_sprite = 140
+    toolbar_sprite = 96
   },
   drill = {
     strength = 3,
-    toolbar_sprite = 139
+    toolbar_sprite = 112
   }
 }
 
@@ -322,7 +322,7 @@ game_scene = make_scene({
     spr(self.player.tool.toolbar_sprite, tool_x, 1)
 
     local gold_x = tool_x + 10
-    spr(141,gold_x,1)
+    spr(64,gold_x,1)
     print(self.gold_amount, gold_x+7,2, 7)
 
 
