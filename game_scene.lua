@@ -21,6 +21,9 @@ function make_player()
       end
       self.x += self.dx
       self.y += self.dy
+
+      self.x = max(self.x, 0)
+      self.x = min(self.x, screen_width - 16)
     end,
     draw = function(self)
       spr(1, self.x, self.y, 2, 2)
@@ -37,6 +40,6 @@ game_scene = make_scene({
   update = function(self)
   end,
   draw = function(self)
-    cls()
+    cls(2)
   end
 })
