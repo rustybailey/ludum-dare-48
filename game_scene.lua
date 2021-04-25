@@ -236,7 +236,7 @@ local tiles = {
   }
 }
 
-debug_tile = nil
+debug_tile = tiles.pickaxe
 debug_tile_returned = false
 
 function choose_tile(player)
@@ -425,7 +425,7 @@ game_scene = make_scene({
     local tool_x = (6*4) + 4
     spr(self.player.tool.toolbar_sprite, tool_x, 1)
 
-    local uses_line_length = flr(self.player.tool_use_percent * 6)
+    local uses_line_length = ceil(self.player.tool_use_percent * 6)
 
     local use_line_color = 11
     if (uses_line_length <= 1) then
@@ -433,9 +433,7 @@ game_scene = make_scene({
     elseif (uses_line_length <= 3) then
       use_line_color = 10
     end
-
     line(tool_x, 9, tool_x + uses_line_length, 9, use_line_color)
-
 
     local gold_x = tool_x + 10
     spr(64,gold_x,1)
