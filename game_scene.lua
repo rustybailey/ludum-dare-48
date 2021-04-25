@@ -110,6 +110,8 @@ end
 
 local tiles = {
   dirt = {
+    make_dust = true,
+    rnd_flip = true,
     rarity = 150,
     strength = 1,
     color = 4,
@@ -118,6 +120,8 @@ local tiles = {
     }
   },
   gravel = {
+    make_dust = true,
+    rnd_flip = true,
     rarity = 40,
     strength = 2,
     color = 6,
@@ -127,6 +131,8 @@ local tiles = {
     }
   },
   rock = {
+    make_dust = true,
+    rnd_flip = true,
     rarity = 40,
     strength = 3,
     color = 5,
@@ -137,6 +143,8 @@ local tiles = {
     }
   },
   rock_gold = {
+    make_dust = true,
+    rnd_flip = true,
     gold_amount = 15,
     rarity = 10,
     strength = 3,
@@ -148,6 +156,8 @@ local tiles = {
     }
   },
   gravel_gold = {
+    make_dust = true,
+    rnd_flip = true,
     gold_amount = 10,
     rarity = 5,
     strength = 2,
@@ -156,15 +166,25 @@ local tiles = {
       230,
       228
     }
+  },
+  clock = {
+    clock_add = 10,
+    rarity = 1,
+    strength = 0,
+    sprite = 135
   }
 }
 
 debug_rarity = false
 rarity_called = false
-function choose_tile()
+function choose_tile(player_y)
   if (debug_rarity and rarity_called) then
     return tiles.dirt
   end
+
+  -- if (player_y and player_y > 1 and player_y % 20 == 0 and rnd(100) <= 20) then
+  --   return tiles.clock
+  -- end
 
   local total_rarity = 0
   
@@ -198,18 +218,25 @@ function choose_tile()
 end
 
 function make_tile(o)
-  local tile = choose_tile()
+  local tile = choose_tile(o.player_y)
   return {
     strength = tile.strength,
     x = o.x,
     y = o.y,
+    clock_add = tile.clock_add,
+    make_dust = tile.make_dust,
     color = tile.color,
     sprites = tile.sprites,
-    flip_x = rnd(1) < 0.5,
-    flip_y = rnd(1) < 0.5,
+    sprite = tile.sprite,
+    flip_x = tile.rnd_flip and rnd(1) < 0.5,
+    flip_y = tile.rnd_flip and rnd(1) < 0.5,
     gold_amount = tile.gold_amount,
     draw = function(self)
-      spr(self.sprites[flr(self.strength)], self.x * 16, self.y * 16, 2, 2, self.flip_x, self.flip_y)
+      local sprite = self.sprite
+      if (self.sprites) then
+        sprite = self.sprites[flr(self.strength)]
+      end
+      spr(sprite, self.x * 16, self.y * 16, 2, 2, self.flip_x, self.flip_y)
       if(show_coordinates) then
         print(self.x..","..self.y, self.x * 16, self.y * 16, 8)
       end
@@ -261,20 +288,27 @@ game_scene = make_scene({
     if (hit_tile) then
       hit_tile.strength -= self.player.tool.strength
       if (hit_tile.strength <= 0) then
+
         if (hit_tile.gold_amount) then
           self.gold_amount += hit_tile.gold_amount
         end
+
+        if (hit_tile.clock_add) then
+          self.count_down += hit_tile.clock_add 
+        end
+
         self:remove(hit_tile)
         self.tile_map[x][y] = nil
       end
-    end
-    if (hit_tile) then
-      self.player:dig(x,y)
-      local dust_y = y * 16
-      if (hit_tile.strength <= 0) then
-        dust_y += 16
+
+      if (hit_tile.make_dust) then
+        local dust_y = y * 16
+        if (hit_tile.strength <= 0) then
+          dust_y += 16
+        end
+        self.player:dig(x,y)
+        make_dust(self, x * 16 + 8, dust_y, hit_tile.color)
       end
-      make_dust(self, x * 16 + 8, dust_y, hit_tile.color)
     end
 
     if (hit_tile == nil or hit_tile.strength <= 0) then
@@ -299,7 +333,7 @@ game_scene = make_scene({
     if (self.player.y + tiles_below == self.last_tile_placed.y) then
       local y = self.last_tile_placed.y + 1
       for x=0,7 do
-        local tile = make_tile({x = x, y = y})
+        local tile = make_tile({x = x, y = y, player_y = self.player.y})
         self.tile_map[x][y] = tile
         self:add(tile)
         self.last_tile_placed = tile
