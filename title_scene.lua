@@ -145,11 +145,15 @@ title_scene = make_scene({
 
     -- draw title once player is riding minecart
     if self.is_riding_minecart then
-      -- todo: design actual logo sprite
-      center_print("dig it!", 40, 10)
+      local logo_x = 40
+      local logo_y = 25
+      local second_text_offset = 19
+      spr(137, logo_x, logo_y, 8, 2)
+      spr(169, 43, logo_y + second_text_offset, 4, 2)
+      spr(173, 72, logo_y + second_text_offset, 2, 2)
 
       if self.start_game_text_blink > 30 then
-        center_print("press z or x to start", screen_width / 2, 7)
+        center_print("press z or x to start", 74, 7)
       end
     end
   end
