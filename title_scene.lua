@@ -32,15 +32,9 @@ title_scene = make_scene({
   is_riding_minecart = false,
   tile_sprites = {
     192,
-    226,
     194,
-    200,
-    198,
     196,
-    206,
-    204,
     202,
-    230,
     228
   },
   tiles = {},

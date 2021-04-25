@@ -143,12 +143,13 @@ local tiles = {
     make_dust = true,
     rnd_flip = true,
     rarity = 40,
-    strength = 4,
+    strength = 5,
     color = 5,
     sprites = {
       200,
       200,
       198,
+      196,
       196,
     }
   },
@@ -157,12 +158,13 @@ local tiles = {
     rnd_flip = true,
     gold_amount = 15,
     rarity = 10,
-    strength = 4,
+    strength = 5,
     color = 10,
     sprites = {
       206,
       206,
       204,
+      202,
       202
     }
   },
