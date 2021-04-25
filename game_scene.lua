@@ -56,19 +56,23 @@ player_sprites = {
 
 local tools = {
   shovel = {
+    dig_delay = true,
     name = "shovel",
     strength = 1,
-    toolbar_sprite = 80
+    toolbar_sprite = 80,
   },
   pickaxe = {
+    dig_delay = true,
     name = "pickaxe",
     strength = 2,
     toolbar_sprite = 96
   },
   drill = {
+    dig_delay = false,
     name = "drill",
     strength = 3,
     toolbar_sprite = 112
+
   }
 }
 
@@ -217,7 +221,7 @@ local tiles = {
   }
 }
 
-debug_tile = tiles.clock
+debug_tile = tiles.drill
 debug_tile_returned = false
 
 function choose_tile(player)
@@ -324,7 +328,7 @@ game_scene = make_scene({
     self:add(self.player)
   end,
   try_move = function(self)
-    if (self.player.digging) then
+    if (self.player.digging and self.player.tool.dig_delay) then
       return
     end
 
