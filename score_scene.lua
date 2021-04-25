@@ -1,24 +1,28 @@
 score_scene = make_scene({
   -- music = 0,
-  gold_multiplier = 50,
-  depth_multiplier = 10,
+  gold_multiplier = 10,
+  depth_multiplier = 2z0,
   tally_score = function(self)
     while(self.gold_counter < current_gold) do
       self.gold_counter += 1
+      sfx(11)
       yield()
     end
 
     delay(30)
     self.final_gold_score = self.gold_counter * self.gold_multiplier
+    sfx(12)
     delay(30)
 
     while(self.depth_counter < current_meters) do
       self.depth_counter += 1
+      sfx(11)
       yield()
     end
 
     delay(30)
     self.final_depth_score = self.depth_counter * self.depth_multiplier
+    sfx(12)
 
     delay(60)
     self.final_total_score = self.final_gold_score + self.final_depth_score
@@ -27,6 +31,9 @@ score_scene = make_scene({
     if self.final_total_score > high_score then
       self.is_new_record = true
       high_score = self.final_total_score
+      music(5)
+    else
+      sfx(12)
     end
 
     delay(30)
