@@ -182,13 +182,13 @@ local tiles = {
   },
   pickaxe = {
     tool = tools.pickaxe,
-    rarity = 10,
+    rarity = 0,
     strength = 0,
     sprite = 129    
   },
   drill = {
     tool = tools.drill,
-    rarity = 10,
+    rarity = 0,
     strength = 0,
     sprite = 131    
   }
@@ -197,14 +197,18 @@ local tiles = {
 
 debug_rarity = false
 rarity_called = false
-function choose_tile(player_y)
+function choose_tile(player)
   if (debug_rarity and rarity_called) then
     return tiles.dirt
   end
 
-  -- if (player_y and player_y > 1 and player_y % 20 == 0 and rnd(100) <= 20) then
-  --   return tiles.clock
-  -- end
+  if (player and player.y >= 20 and player.y % 10 == 0 and player.tool.name == "shovel") then
+    return tiles.pickaxe
+  end
+
+  if (player and player.y >= 40 and player.y % 10 == 0 and player.tool.name == "pickaxe") then
+    return tiles.drill
+  end
 
   local total_rarity = 0
   
@@ -238,7 +242,7 @@ function choose_tile(player_y)
 end
 
 function make_tile(o)
-  local tile = choose_tile(o.player_y)
+  local tile = choose_tile(o.player)
   return {
     strength = tile.strength,
     x = o.x,
@@ -268,7 +272,7 @@ end
 tiles_below = 4
 
 game_scene = make_scene({
-  music = 4,
+  music = 0,
   init = function(self)
     self.player = make_player()
     self.tile_map = {}
@@ -358,7 +362,7 @@ game_scene = make_scene({
     if (self.player.y + tiles_below == self.last_tile_placed.y) then
       local y = self.last_tile_placed.y + 1
       for x=0,7 do
-        local tile = make_tile({x = x, y = y, player_y = self.player.y})
+        local tile = make_tile({x = x, y = y, player = self.player})
         self.tile_map[x][y] = tile
         self:add(tile)
         self.last_tile_placed = tile
