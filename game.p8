@@ -14,7 +14,7 @@ __lua__
 
 
 function _init()
-  change_scene(title_scene)
+  change_scene(score_scene)
 end
 
 function _update60()
