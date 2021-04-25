@@ -1,7 +1,7 @@
 score_scene = make_scene({
   -- music = 0,
   gold_multiplier = 10,
-  depth_multiplier = 2z0,
+  depth_multiplier = 20,
   tally_score = function(self)
     while(self.gold_counter < current_gold) do
       self.gold_counter += 1
