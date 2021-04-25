@@ -120,9 +120,10 @@ local tiles = {
     make_dust = true,
     rnd_flip = true,
     rarity = 150,
-    strength = 1,
+    strength = 2,
     color = 4,
     sprites = {
+      224,
       192
     }
   },
@@ -130,10 +131,11 @@ local tiles = {
     make_dust = true,
     rnd_flip = true,
     rarity = 40,
-    strength = 2,
+    strength = 3,
     color = 6,
     sprites = {
       226,
+      194,
       194
     }
   },
@@ -141,12 +143,13 @@ local tiles = {
     make_dust = true,
     rnd_flip = true,
     rarity = 40,
-    strength = 3,
+    strength = 4,
     color = 5,
     sprites = {
       200,
+      200,
       198,
-      196
+      196,
     }
   },
   rock_gold = {
@@ -154,9 +157,10 @@ local tiles = {
     rnd_flip = true,
     gold_amount = 15,
     rarity = 10,
-    strength = 3,
+    strength = 4,
     color = 10,
     sprites = {
+      206,
       206,
       204,
       202
@@ -167,9 +171,10 @@ local tiles = {
     rnd_flip = true,
     gold_amount = 10,
     rarity = 5,
-    strength = 2,
+    strength = 3,
     color = 10,
     sprites = {
+      230,
       230,
       228
     }
