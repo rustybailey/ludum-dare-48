@@ -451,6 +451,12 @@ game_scene = make_scene({
         self:add(tile)
         self.last_tile_placed = tile
       end
+
+      for x=0,7 do
+        -- clean up tiles above the player out of view
+        local tile_to_remove = self.tile_map[x][self.player.y - 3]
+        self:remove(tile_to_remove)
+      end
     end
 
     current_meters = self.player.y
