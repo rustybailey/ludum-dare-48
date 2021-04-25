@@ -60,33 +60,46 @@ local tools = {
     name = "shovel",
     strength = 1,
     toolbar_sprite = 80,
+    uses = 32767
   },
   pickaxe = {
     dig_delay = true,
     name = "pickaxe",
     strength = 2,
-    toolbar_sprite = 96
+    toolbar_sprite = 96,
+    uses = 100
   },
   drill = {
     dig_delay = false,
     name = "drill",
     strength = 3,
-    toolbar_sprite = 112
-
+    toolbar_sprite = 112,
+    uses = 100
   }
 }
 
 function make_player()
-  return {
+  local player = {
     x = 3,
     y = 0,
     pos = vector{3,0},
     dx = 0,
     dy = 0,
-    tool = tools.shovel,
     dig_counter = 0,
     flip_x = false,
     init = function(self)
+    end,
+    use_tool = function(self, uses)
+      self.tool_uses -= uses
+      self.tool_use_percent = self.tool_uses / self.tool.uses
+      if (self.tool_uses <= 0) then
+        self:set_tool(tools.shovel)
+      end
+    end,
+    set_tool = function(self, tool)
+      self.tool = tool
+      self.tool_uses = tool.uses
+      self.tool_use_percent = 1
     end,
     dig = function(self,x,y)
       local next_pos = vector{x,y}
@@ -125,6 +138,8 @@ function make_player()
       end
     end
   }
+  player:set_tool(tools.shovel)
+  return player
 end
 
 local tiles = {
@@ -132,7 +147,7 @@ local tiles = {
     name = 'dirt',
     make_dust = true,
     rnd_flip = true,
-    rarity = 150,
+    rarity = 1500,
     strength = 2,
     color = 4,
     sprites = {
@@ -144,7 +159,7 @@ local tiles = {
     name = 'gravel',
     make_dust = true,
     rnd_flip = true,
-    rarity = 40,
+    rarity = 400,
     strength = 3,
     color = 6,
     sprites = {
@@ -157,7 +172,7 @@ local tiles = {
     name = 'rock',
     make_dust = true,
     rnd_flip = true,
-    rarity = 40,
+    rarity = 400,
     strength = 5,
     color = 5,
     sprites = {
@@ -173,7 +188,7 @@ local tiles = {
     make_dust = true,
     rnd_flip = true,
     gold_amount = 15,
-    rarity = 10,
+    rarity = 100,
     strength = 5,
     color = 10,
     sprites = {
@@ -189,7 +204,7 @@ local tiles = {
     make_dust = true,
     rnd_flip = true,
     gold_amount = 10,
-    rarity = 5,
+    rarity = 50,
     strength = 3,
     color = 10,
     sprites = {
@@ -201,27 +216,27 @@ local tiles = {
   clock = {
     name = 'clock',
     clock_add = 10,
-    rarity = 1,
+    rarity = 10,
     strength = 0,
     sprite = 135
   },
   pickaxe = {
     name = 'pickaxe',
     tool = tools.pickaxe,
-    rarity = 0,
+    rarity = 10,
     strength = 0,
     sprite = 129    
   },
   drill = {
     name = 'drill',
     tool = tools.drill,
-    rarity = 0,
+    rarity = 5,
     strength = 0,
     sprite = 131    
   }
 }
 
-debug_tile = tiles.drill
+debug_tile = nil
 debug_tile_returned = false
 
 function choose_tile(player)
@@ -236,14 +251,6 @@ function choose_tile(player)
   if (debug_tile and not debug_tile_returned) then
     debug_tile_returned = true    
     return debug_tile
-  end
-
-  if (player and player.y >= 20 and player.y % 10 == 0 and player.tool.name == "shovel") then
-    return tiles.pickaxe
-  end
-
-  if (player and player.y >= 40 and player.y % 10 == 0 and player.tool.name == "pickaxe") then
-    return tiles.drill
   end
 
   local total_rarity = 0
@@ -344,6 +351,7 @@ game_scene = make_scene({
 
     local hit_tile = self.tile_map[x][y]
     if (hit_tile) then
+      self.player:use_tool(hit_tile.strength)
       hit_tile.strength -= self.player.tool.strength
       if (hit_tile.strength <= 0) then
 
@@ -356,7 +364,7 @@ game_scene = make_scene({
         end
 
         if (hit_tile.tool) then
-          self.player.tool = hit_tile.tool
+          self.player:set_tool(hit_tile.tool)
         end
 
         self:remove(hit_tile)
@@ -417,11 +425,21 @@ game_scene = make_scene({
     local tool_x = (6*4) + 4
     spr(self.player.tool.toolbar_sprite, tool_x, 1)
 
+    local uses_line_length = flr(self.player.tool_use_percent * 6)
+
+    local use_line_color = 11
+    if (uses_line_length <= 1) then
+      use_line_color = 8
+    elseif (uses_line_length <= 3) then
+      use_line_color = 10
+    end
+
+    line(tool_x, 9, tool_x + uses_line_length, 9, use_line_color)
+
+
     local gold_x = tool_x + 10
     spr(64,gold_x,1)
     print(self.gold_amount, gold_x+7,2, 7)
-
-
 
     local count_down_offset = (2 * 4)
     if (self.count_down >= 100) then
