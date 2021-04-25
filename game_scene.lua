@@ -19,38 +19,46 @@ end
 
 dig_animation_length = 16
 
-dig_down_sprites = {
-  5,
-  11
-}
-
-dig_right_sprites = {
-  9,
-  11
-}
-
 player_sprites = {
-  idle = {
-    1,
-    3
+  shovel = {
+    idle = { 1, 3 },
+    dig = {
+      down = { 5,11 },
+      right = { 9,11 },
+      left = { 9,11 }
+    }
   },
-  dig = {
-    down = dig_down_sprites,
-    right = dig_right_sprites,
-    left = dig_right_sprites
+  pickaxe = {
+    idle = { 33, 35 },
+    dig = {
+      down = { 39,37 },
+      right = { 43,41 },
+      left = { 43,41 }
+    }
+  },
+  drill = {
+    idle = { 65, 67 },
+    dig = {
+      down = { 69,71,69,71 },
+      right = { 73,75,73,75 },
+      left = { 73,75,73,75 }
+    }
   }
 }
 
 local tools = {
   shovel = {
+    name = "shovel",
     strength = 1,
     toolbar_sprite = 80
   },
   pickaxe = {
+    name = "pickaxe",
     strength = 2,
     toolbar_sprite = 96
   },
   drill = {
+    name = "drill",
     strength = 3,
     toolbar_sprite = 112
   }
@@ -64,7 +72,6 @@ function make_player()
     dx = 0,
     dy = 0,
     tool = tools.shovel,
-    sprite = player_sprites.idle[1],
     dig_counter = 0,
     flip_x = false,
     init = function(self)
@@ -74,7 +81,7 @@ function make_player()
       self.dig_direction = vector_direction(next_pos - self.pos)
       self.digging = true
       self.dig_counter = 1
-      self.dig_sprites = player_sprites.dig[self.dig_direction]
+      self.dig_sprites = player_sprites[self.tool.name].dig[self.dig_direction]
       if (self.dig_direction == "left") then
         self.flip_x = true
       else 
@@ -96,7 +103,7 @@ function make_player()
       else
         self.digging = false
         self.flip_x = false
-        self.sprite = 1
+        self.sprite = player_sprites[self.tool.name].idle[1]
       end
     end,
     draw = function(self)
@@ -172,7 +179,20 @@ local tiles = {
     rarity = 1,
     strength = 0,
     sprite = 135
+  },
+  pickaxe = {
+    tool = tools.pickaxe,
+    rarity = 10,
+    strength = 0,
+    sprite = 129    
+  },
+  drill = {
+    tool = tools.drill,
+    rarity = 10,
+    strength = 0,
+    sprite = 131    
   }
+
 }
 
 debug_rarity = false
@@ -223,6 +243,7 @@ function make_tile(o)
     strength = tile.strength,
     x = o.x,
     y = o.y,
+    tool = tile.tool,
     clock_add = tile.clock_add,
     make_dust = tile.make_dust,
     color = tile.color,
@@ -295,6 +316,10 @@ game_scene = make_scene({
 
         if (hit_tile.clock_add) then
           self.count_down += hit_tile.clock_add 
+        end
+
+        if (hit_tile.tool) then
+          self.player.tool = hit_tile.tool
         end
 
         self:remove(hit_tile)
