@@ -10,26 +10,11 @@ title_scene = make_scene({
     165,
     167
   },
-  player_current_sprite = 101,
-  current_spin_index = 2,
-  should_flip_sprite = false,
-  spin_counter = 1,
   player_pos = {
     x = 10,
     y = -10
   },
   player_target_y = 96,
-  has_hit_target_y = false,
-  minecart = {
-    pos_x = 10,
-    pos_y = 96,
-    is_visible = true,
-  },
-  player_x_dir = 1,
-  start_game_text_blink = 1,
-  minecart_anim_counter = 1,
-  current_minecart_index = 1,
-  is_riding_minecart = false,
   tile_sprites = {
     192,
     194,
@@ -95,6 +80,19 @@ title_scene = make_scene({
     end
   end,
   init = function(self)
+    self.player_x_dir = 1
+    self.start_game_text_blink = 1
+    self.minecart_anim_counter = 1
+    self.current_minecart_index = 1
+    self.is_riding_minecart = false
+    self.has_hit_target_y = false
+    self.minecart_is_visible = false
+    self.player_current_sprite = 101
+    self.current_spin_index = 2
+    self.should_flip_sprite = false
+    self.spin_counter = 1
+    self.player_pos.y = -10
+
     sfx(10)
     self:initialize_tiles()
   end,
@@ -103,7 +101,7 @@ title_scene = make_scene({
       self.player_pos.y += 2
       self:set_next_spin_sprite()
     else
-      self.minecart.is_visible = false
+      self.minecart_is_visible = false
       self:ride_minecart()
     end
 
@@ -128,7 +126,7 @@ title_scene = make_scene({
     spr(self.player_current_sprite, self.player_pos.x, self.player_pos.y, 2, 2, self.should_flip_sprite)
 
     -- draw minecart
-    if self.minecart.is_visible then
+    if self.minecart_is_visible then
       spr(163, 10, 96, 2, 2)
     end
 

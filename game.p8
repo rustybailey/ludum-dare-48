@@ -9,11 +9,12 @@ __lua__
 #include vector.lua
 #include title_scene.lua
 #include game_scene.lua
+#include score_scene.lua
 
 
 
 function _init()
-  change_scene(game_scene)
+  change_scene(title_scene)
 end
 
 function _update60()
