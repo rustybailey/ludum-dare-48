@@ -316,9 +316,15 @@ game_scene = make_scene({
   init = function(self)
     self.player = make_player()
     self.tile_map = {}
-    self.count_down = 100
+    self.count_down = 60
     self.frame=1
     self.gold_amount = 0
+    self.times_up = false
+    self.times_up_scene_change_counter = 0
+    self.times_up_scene_change_delay = 60 * 2
+    current_meters = 0
+    current_gold = 0
+    score = 0
 
     for x=0,7 do
       for y=1,tiles_below do
@@ -386,10 +392,22 @@ game_scene = make_scene({
     end
   end,
   update = function(self)
+    if (self.times_up) then
+      self.times_up_scene_change_counter += 1
+      if (self.times_up_scene_change_counter > self.times_up_scene_change_delay) then
+        change_scene(score_scene)
+      end
+      return
+    end
     self.frame += 1
     self.frame = self.frame % 60
     if (self.frame == 0) then
       self.count_down -= 1
+    end
+    if (self.count_down == 0) then
+      self.times_up = true
+      -- TODO: stop music, play sfx
+      return
     end
     if (btnp(1) and self.player.x < 7) then
       self.requested_move = direction_right
@@ -409,6 +427,9 @@ game_scene = make_scene({
         self.last_tile_placed = tile
       end
     end
+
+    current_meters = self.player.y
+    current_gold = self.gold_amount
   end,
   draw = function(self)
     cls(0)
@@ -447,5 +468,10 @@ game_scene = make_scene({
     end
     print('time', screen_width - (4 * 4) - 1,2, 7)
     print(self.count_down, screen_width - count_down_offset - 1,9, 7)
+
+    if (self.times_up) then
+      rectfill(40, 60, 85, 72, 0)
+      center_print('time\'s up!', screen_height / 2, 7)
+    end
   end
 })
