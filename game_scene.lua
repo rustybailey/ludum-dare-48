@@ -102,6 +102,7 @@ function make_player()
     dy = 0,
     dig_counter = 0,
     flip_x = false,
+    sprite = player_sprites.shovel.idle[1],
     init = function(self)
     end,
     use_tool = function(self, uses)
@@ -345,6 +346,7 @@ game_scene = make_scene({
     self.times_up = false
     self.times_up_scene_change_counter = 0
     self.times_up_scene_change_delay = 60 * 2
+    self.requested_move = nil
     current_meters = 0
     current_gold = 0
     score = 0
