@@ -13,8 +13,7 @@ __lua__
 
 
 function _init()
-  change_scene(title_scene)
-  current_scene:init()
+  change_scene(game_scene)
 end
 
 function _update60()

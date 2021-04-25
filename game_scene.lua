@@ -1,4 +1,12 @@
-show_coordinates = false
+-- debug flags
+debug_show_coordinates = false
+debug_rarity = false
+
+-- debug state variables
+debug_rarity_called = false
+
+-- how many tiles are below the player at all times
+tiles_below = 4
 
 direction_up = vector{0,-1}
 direction_down = vector{0,1}
@@ -108,7 +116,7 @@ function make_player()
     end,
     draw = function(self)
       spr(self.sprite, self.x * 16, self.y * 16, 2, 2, self.flip_x, false)
-      if(show_coordinates) then
+      if(debug_show_coordinates) then
         print(self.x..","..self.y, self.x * 16, self.y * 16, 8)
       end
     end
@@ -117,6 +125,7 @@ end
 
 local tiles = {
   dirt = {
+    name = 'dirt',
     make_dust = true,
     rnd_flip = true,
     rarity = 150,
@@ -128,6 +137,7 @@ local tiles = {
     }
   },
   gravel = {
+    name = 'gravel',
     make_dust = true,
     rnd_flip = true,
     rarity = 40,
@@ -140,6 +150,7 @@ local tiles = {
     }
   },
   rock = {
+    name = 'rock',
     make_dust = true,
     rnd_flip = true,
     rarity = 40,
@@ -154,6 +165,7 @@ local tiles = {
     }
   },
   rock_gold = {
+    name = 'rock_gold',
     make_dust = true,
     rnd_flip = true,
     gold_amount = 15,
@@ -169,6 +181,7 @@ local tiles = {
     }
   },
   gravel_gold = {
+    name = 'gravel_gold',
     make_dust = true,
     rnd_flip = true,
     gold_amount = 10,
@@ -182,31 +195,43 @@ local tiles = {
     }
   },
   clock = {
+    name = 'clock',
     clock_add = 10,
     rarity = 1,
     strength = 0,
     sprite = 135
   },
   pickaxe = {
+    name = 'pickaxe',
     tool = tools.pickaxe,
     rarity = 0,
     strength = 0,
     sprite = 129    
   },
   drill = {
+    name = 'drill',
     tool = tools.drill,
     rarity = 0,
     strength = 0,
     sprite = 131    
   }
-
 }
 
-debug_rarity = false
-rarity_called = false
+debug_tile = tiles.clock
+debug_tile_returned = false
+
 function choose_tile(player)
-  if (debug_rarity and rarity_called) then
-    return tiles.dirt
+  if (debug_rarity) then
+    if (not debug_rarity_called) then
+      debug_rarity_called = true
+    else
+      return tiles.dirt
+    end
+  end
+
+  if (debug_tile and not debug_tile_returned) then
+    debug_tile_returned = true    
+    return debug_tile
   end
 
   if (player and player.y >= 20 and player.y % 10 == 0 and player.tool.name == "shovel") then
@@ -244,7 +269,6 @@ function choose_tile(player)
     end
   end
 
-  rarity_called = true
   return current_tile
 end
 
@@ -269,14 +293,12 @@ function make_tile(o)
         sprite = self.sprites[flr(self.strength)]
       end
       spr(sprite, self.x * 16, self.y * 16, 2, 2, self.flip_x, self.flip_y)
-      if(show_coordinates) then
+      if(debug_show_coordinates) then
         print(self.x..","..self.y, self.x * 16, self.y * 16, 8)
       end
     end
   }
 end
-
-tiles_below = 4
 
 game_scene = make_scene({
   music = 0,
