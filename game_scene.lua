@@ -51,7 +51,15 @@ player_sprites = {
       right = { 73,75,73,75 },
       left = { 73,75,73,75 }
     }
-  }
+  },
+  ruby = {
+    idle = { 99 },
+    dig = {
+      down = { 99,101,103 },
+      right = { 99,101,103 },
+      left = { 99,101,103 }
+    }
+  },
 }
 
 local tools = {
@@ -67,7 +75,7 @@ local tools = {
     name = "pickaxe",
     strength = 2,
     toolbar_sprite = 96,
-    uses = 100
+    uses = 200
   },
   drill = {
     dig_delay = false,
@@ -75,7 +83,14 @@ local tools = {
     strength = 3,
     toolbar_sprite = 112,
     uses = 100
-  }
+  },
+  ruby = {
+    dig_delay = false,
+    name = "ruby",
+    strength = 10,
+    toolbar_sprite = 79,
+    uses = 200
+  },
 }
 
 function make_player()
@@ -233,10 +248,17 @@ local tiles = {
     rarity = 5,
     strength = 0,
     sprite = 131    
+  },
+  ruby = {
+    name = 'ruby',
+    tool = tools.ruby,
+    rarity = 4,
+    strength = 0,
+    sprite = 97,
   }
 }
 
-debug_tile = tiles.pickaxe
+debug_tile = nil
 debug_tile_returned = false
 
 function choose_tile(player)
@@ -289,6 +311,7 @@ function make_tile(o)
     strength = tile.strength,
     x = o.x,
     y = o.y,
+    name = tile.name,
     tool = tile.tool,
     clock_add = tile.clock_add,
     make_dust = tile.make_dust,
@@ -354,7 +377,6 @@ game_scene = make_scene({
       self.player:use_tool(hit_tile.strength)
       hit_tile.strength -= self.player.tool.strength
       if (hit_tile.strength <= 0) then
-
         if (hit_tile.gold_amount) then
           self.gold_amount += hit_tile.gold_amount
         end
@@ -398,6 +420,7 @@ game_scene = make_scene({
     elseif (btnp(3)) then
       self.requested_move = direction_down
     end
+
     self:try_move()
 
     if (self.player.y + tiles_below == self.last_tile_placed.y) then
