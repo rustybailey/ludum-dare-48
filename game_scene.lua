@@ -108,7 +108,7 @@ local tools = {
     hand_tool = false,
     name = "cart",
     strength = 10,
-    toolbar_sprite = 143,
+    toolbar_sprite = 78,
     uses = 200
   },
 }
