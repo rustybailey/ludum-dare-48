@@ -4,7 +4,10 @@ score_scene = make_scene({
   -- depth_multiplier = 2,
   tally_score = function(self)
     while(self.gold_counter < current_gold) do
-      self.gold_counter += 1
+      -- tallying should take 3 seconds
+      local d = flr(current_gold / 60 / 3)
+      self.gold_counter += d
+      self.gold_counter = min(self.gold_counter, current_gold)
       sfx(11)
       yield()
     end
@@ -15,7 +18,10 @@ score_scene = make_scene({
     delay(30)
 
     while(self.depth_counter < current_depth) do
-      self.depth_counter += 1
+      -- tallying should take 2 seconds
+      local d = flr(current_gold / 60 / 2)
+      self.depth_counter += d
+      self.depth_counter = min(self.depth_counter, current_depth)
       sfx(11)
       yield()
     end
