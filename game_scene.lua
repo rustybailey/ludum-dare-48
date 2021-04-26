@@ -127,8 +127,9 @@ function make_player()
     end,
     drop_tool = function(self)
       if (self.previous_tool) then
-        self:set_tool(self.previous_tool)
-        self.previous_tool_uses = self.tool_uses
+        self.tool = self.previous_tool
+        self.tool_uses = self.previous_tool_uses
+        self.tool_use_percent = 1
         self.previous_tool = nil
       else
         self:set_tool(tools.shovel)
