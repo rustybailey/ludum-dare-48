@@ -129,7 +129,7 @@ function make_player()
       if (self.previous_tool) then
         self.tool = self.previous_tool
         self.tool_uses = self.previous_tool_uses
-        self.tool_use_percent = 1
+        self.tool_use_percent = self.tool_uses / self.tool.uses
         self.previous_tool = nil
       else
         self:set_tool(tools.shovel)
