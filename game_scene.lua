@@ -85,7 +85,7 @@ local tools = {
     name = "pickaxe",
     strength = 2,
     toolbar_sprite = 96,
-    uses = 200
+    uses = 250
   },
   drill = {
     dig_delay = false,
@@ -93,7 +93,7 @@ local tools = {
     name = "drill",
     strength = 3,
     toolbar_sprite = 112,
-    uses = 100
+    uses = 150
   },
   ruby = {
     dig_delay = false,
@@ -582,7 +582,7 @@ game_scene = make_scene({
     print("depth", 2,2, 7)
     print(self.player.y, 2,9, 7)
     
-    local tool_x = (6*4) + 4
+    local tool_x = (4*5) + 4
     spr(self.player.tool.toolbar_sprite, tool_x, 1)
 
     local uses_line_length = ceil(self.player.tool_use_percent * 6)
