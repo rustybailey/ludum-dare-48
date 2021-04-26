@@ -1,6 +1,8 @@
 pico-8 cartridge // http://www.pico-8.com
 version 32
 __lua__
+-- dig it!
+-- by jon koon and rusty bailey
 
 #include globals.lua
 #include utils.lua
@@ -12,8 +14,6 @@ __lua__
 #include title_scene.lua
 #include game_scene.lua
 #include score_scene.lua
-
-
 
 function _init()
   change_scene(title_scene)
