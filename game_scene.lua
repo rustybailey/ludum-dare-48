@@ -387,7 +387,7 @@ game_scene = make_scene({
   init = function(self)
     self.player = make_player()
     self.tile_map = {}
-    self.count_down = 60
+    self.count_down = 10
     self.frame=1
     self.gold_amount = 0
     self.times_up = false
@@ -534,6 +534,7 @@ game_scene = make_scene({
     self.frame = self.frame % 60
     if (self.frame == 0) then
       self.count_down -= 1
+      if (self.count_down <= 5 and self.count_down > 0) sfx(20)
     end
     if (self.count_down == 0) then
       self.times_up = true
