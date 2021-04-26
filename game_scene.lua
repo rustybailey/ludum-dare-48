@@ -101,7 +101,7 @@ local tools = {
     name = "ruby",
     strength = 10,
     toolbar_sprite = 79,
-    uses = 50
+    uses = 100
   },
   cart = {
     dig_delay = true,
