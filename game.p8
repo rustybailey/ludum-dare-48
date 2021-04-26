@@ -7,6 +7,8 @@ __lua__
 #include scene.lua
 #include particles.lua
 #include vector.lua
+#include iris.lua
+
 #include title_scene.lua
 #include game_scene.lua
 #include score_scene.lua

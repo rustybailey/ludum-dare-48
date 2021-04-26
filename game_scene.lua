@@ -364,6 +364,9 @@ game_scene = make_scene({
     end
 
     self:add(self.player)
+
+
+    self.iris = make_iris(self.player.x * 16 + 8,self.player.y*16 - 8)
   end,
   try_move = function(self)
     if (self.player.digging and self.player.tool.dig_delay) then
@@ -416,6 +419,7 @@ game_scene = make_scene({
     end
   end,
   update = function(self)
+    self.iris:update()
     if (self.times_up) then
       self.times_up_scene_change_counter += 1
       if (self.times_up_scene_change_counter > self.times_up_scene_change_delay) then
@@ -502,5 +506,7 @@ game_scene = make_scene({
       rectfill(40, 60, 85, 72, 0)
       center_print('time\'s up!', screen_height / 2, 7)
     end
+
+    self.iris:draw()
   end
 })
