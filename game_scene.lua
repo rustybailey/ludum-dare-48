@@ -240,8 +240,14 @@ local tiles = {
     name = 'rock_gold',
     make_dust = true,
     rnd_flip = true,
-    gold_amount = 15,
-    rarity = 100,
+    has_gold = true,
+    gold_amounts = {
+      10,10,
+      20,20,20,20,
+      25,25,25,
+      50,50,
+    },
+    rarity = 50,
     strength = 5,
     color = 10,
     sprites = {
@@ -256,8 +262,13 @@ local tiles = {
     name = 'gravel_gold',
     make_dust = true,
     rnd_flip = true,
-    gold_amount = 10,
-    rarity = 50,
+    has_gold = true,
+    gold_amounts = {
+      10,10,10,10,10,
+      20,
+      25
+    },
+    rarity = 75,
     strength = 3,
     color = 10,
     sprites = {
@@ -350,11 +361,23 @@ function choose_tile(playe, x, y)
   return current_tile
 end
 
+local gold_amount_palette = {}
+gold_amount_palette[10] = { 10,9 }
+gold_amount_palette[20] = { 11,3 }
+gold_amount_palette[25] = { 8,7 }
+gold_amount_palette[50] = { 12,7 }
+
 function make_tile(o)
   local tile = o.tile
   if (tile == nil) then
     tile = choose_tile(o.player)
   end
+
+  local gold_amount = nil
+  if (tile.has_gold) then
+    gold_amount = random_one(tile.gold_amounts)
+  end
+
   return {
     strength = tile.strength,
     x = o.x,
@@ -368,13 +391,25 @@ function make_tile(o)
     sprite = tile.sprite,
     flip_x = tile.rnd_flip and rnd(1) < 0.5,
     flip_y = tile.rnd_flip and rnd(1) < 0.5,
-    gold_amount = tile.gold_amount,
+    gold_amount = gold_amount,
     draw = function(self)
       local sprite = self.sprite
       if (self.sprites) then
         sprite = self.sprites[flr(self.strength)]
       end
+
+      if (self.gold_amount) then
+        local palette = gold_amount_palette[self.gold_amount]
+        pal(10, palette[1])
+        pal(9, palette[2])
+      end
+
       spr(sprite, self.x * 16, self.y * 16, 2, 2, self.flip_x, self.flip_y)
+
+      if (self.gold_amount) then
+        pal() -- restore default palette
+      end
+
       if(debug_show_coordinates) then
         print(self.x..","..self.y, self.x * 16, self.y * 16, 8)
       end
