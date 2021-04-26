@@ -1,7 +1,7 @@
 score_scene = make_scene({
   -- music = 0,
-  gold_multiplier = 5,
-  depth_multiplier = 2,
+  -- gold_multiplier = 5,
+  -- depth_multiplier = 2,
   tally_score = function(self)
     while(self.gold_counter < current_gold) do
       self.gold_counter += 1
@@ -9,23 +9,23 @@ score_scene = make_scene({
       yield()
     end
 
-    delay(30)
-    self.final_gold_score = self.gold_counter * self.gold_multiplier
-    sfx(12)
+    -- delay(30)
+    -- self.final_gold_score = self.gold_counter * self.gold_multiplier
+    -- sfx(12)
     delay(30)
 
-    while(self.depth_counter < current_meters) do
+    while(self.depth_counter < current_depth) do
       self.depth_counter += 1
       sfx(11)
       yield()
     end
 
-    delay(30)
-    self.final_depth_score = self.depth_counter * self.depth_multiplier
-    sfx(12)
+    -- delay(30)
+    -- self.final_depth_score = self.depth_counter * self.depth_multiplier
+    -- sfx(12)
 
     delay(60)
-    self.final_total_score = self.final_gold_score + self.final_depth_score
+    self.final_total_score = self.gold_counter + self.depth_counter
     self.show_scores = true
 
     if self.final_total_score > high_score then
@@ -77,8 +77,8 @@ score_scene = make_scene({
     cls()
 
     local starting_y = 30
-    center_print("gold: ".. self.gold_counter .." x ".. self.gold_multiplier .." = ".. self.final_gold_score, starting_y, 7)
-    center_print("meters: ".. self.depth_counter .." x ".. self.depth_multiplier .." = ".. self.final_depth_score, starting_y + 8, 7)
+    center_print("treasure: ".. self.gold_counter, starting_y, 7)
+    center_print("depth: ".. self.depth_counter, starting_y + 8, 7)
 
     if (self.show_scores) then
       center_print("score: ".. self.final_total_score, starting_y + 24, 10)

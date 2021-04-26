@@ -394,7 +394,7 @@ game_scene = make_scene({
     self.times_up_scene_change_counter = 0
     self.times_up_scene_change_delay = 60 * 2
     self.requested_move = nil
-    current_meters = 0
+    current_depth = 0
     current_gold = 0
     score = 0
 
@@ -567,7 +567,7 @@ game_scene = make_scene({
 
     self:add_tiles()
 
-    current_meters = self.player.y
+    current_depth = self.player.y
     current_gold = self.gold_amount
   end,
   draw = function(self)
@@ -579,7 +579,7 @@ game_scene = make_scene({
     camera(0,0)
     rectfill(0,0,screen_width, 16, 0)
 
-    print("meters", 2,2, 7)
+    print("depth", 2,2, 7)
     print(self.player.y, 2,9, 7)
     
     local tool_x = (6*4) + 4
