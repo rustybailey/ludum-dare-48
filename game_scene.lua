@@ -60,11 +60,20 @@ player_sprites = {
       left = { 99,101,103 }
     }
   },
+  cart = {
+    idle = { 165 },
+    dig = {
+      down = { 165,167 },
+      right = { 165,167 },
+      left = { 165,167 }
+    }
+  },
 }
 
 local tools = {
   shovel = {
     dig_delay = true,
+    hand_tool = true,
     name = "shovel",
     strength = 1,
     toolbar_sprite = 80,
@@ -72,6 +81,7 @@ local tools = {
   },
   pickaxe = {
     dig_delay = true,
+    hand_tool = true,
     name = "pickaxe",
     strength = 2,
     toolbar_sprite = 96,
@@ -79,6 +89,7 @@ local tools = {
   },
   drill = {
     dig_delay = false,
+    hand_tool = true,
     name = "drill",
     strength = 3,
     toolbar_sprite = 112,
@@ -86,7 +97,16 @@ local tools = {
   },
   ruby = {
     dig_delay = false,
+    hand_tool = false,
     name = "ruby",
+    strength = 10,
+    toolbar_sprite = 79,
+    uses = 100
+  },
+  cart = {
+    dig_delay = true,
+    hand_tool = false,
+    name = "cart",
     strength = 10,
     toolbar_sprite = 79,
     uses = 200
@@ -105,14 +125,29 @@ function make_player()
     sprite = player_sprites.shovel.idle[1],
     init = function(self)
     end,
+    drop_tool = function(self)
+      if (self.previous_tool) then
+        self:set_tool(self.previous_tool)
+        self.previous_tool_uses = self.tool_uses
+        self.previous_tool = nil
+      else
+        self:set_tool(tools.shovel)
+      end
+    end,
     use_tool = function(self, uses)
       self.tool_uses -= uses
       self.tool_use_percent = self.tool_uses / self.tool.uses
       if (self.tool_uses <= 0) then
-        self:set_tool(tools.shovel)
+        self:drop_tool()
       end
     end,
     set_tool = function(self, tool)
+      if (self.tool) then
+        if (self.tool.hand_tool) then
+          self.previous_tool = self.tool
+          self.previous_tool_uses = self.tool_uses
+        end
+      end
       self.tool = tool
       self.tool_uses = tool.uses
       self.tool_use_percent = 1
@@ -253,16 +288,23 @@ local tiles = {
   ruby = {
     name = 'ruby',
     tool = tools.ruby,
-    rarity = 4,
+    rarity = 5,
     strength = 0,
     sprite = 97,
+  },
+  cart = {
+    name = 'cart',
+    tool = tools.cart,
+    rarity = 5,
+    strength = 0,
+    sprite = 163,
   }
 }
 
 debug_tile = nil
 debug_tile_returned = false
 
-function choose_tile(player)
+function choose_tile(playe, x, y)
   if (debug_rarity) then
     if (not debug_rarity_called) then
       debug_rarity_called = true
@@ -307,7 +349,10 @@ function choose_tile(player)
 end
 
 function make_tile(o)
-  local tile = choose_tile(o.player)
+  local tile = o.tile
+  if (tile == nil) then
+    tile = choose_tile(o.player)
+  end
   return {
     strength = tile.strength,
     x = o.x,
@@ -352,29 +397,24 @@ game_scene = make_scene({
     score = 0
 
     for x=0,7 do
-      for y=1,tiles_below do
-        if (self.tile_map[x] == nil) then
-          self.tile_map[x] = {}
-        end
-        local tile = make_tile({x = x, y = y})
-        self.tile_map[x][y] = tile
-        self:add(tile)
-        self.last_tile_placed = tile
-      end
+      self.tile_map[x] = {}
+    end
+
+    for y=1,tiles_below do
+      self:add_tile_row(y)
     end
 
     self:add(self.player)
-
 
     self.iris = make_iris(self.player.x * 16 + 8,self.player.y*16 - 8)
   end,
   try_move = function(self)
     if (self.player.digging and self.player.tool.dig_delay) then
-      return
+      return false
     end
 
     if (self.requested_move == nil) then
-      return
+      return false
     end
 
     local new_pos = self.requested_move + self.player.pos
@@ -398,6 +438,10 @@ game_scene = make_scene({
 
         if (hit_tile.tool) then
           self.player:set_tool(hit_tile.tool)
+          if (hit_tile.tool.name == 'cart') then
+            self.cart_move_counter = 8
+            self.player.cart_direction = hit_tile.cart_direction
+          end
         end
 
         self:remove(hit_tile)
@@ -417,6 +461,59 @@ game_scene = make_scene({
     if (hit_tile == nil or hit_tile.strength <= 0) then
       self.player:move(x,y)
     end
+    return true
+  end,
+  setup_cart = function(self, y)
+    local cart_x = 0
+    local cart_direction = direction_right
+    if (rnd(10) <= 5) then
+      cart_x = 7
+      cart_direction = direction_left
+    end
+    for x=0,7 do
+      local existing_tile = self.tile_map[x][y]
+      if (existing_tile) then
+        self:remove(existing_tile)
+      end
+      local tile_type = tiles.rock_gold
+      if (x == cart_x) then
+        tile_type = tiles.cart
+      end
+      local tile = make_tile({x = x, y = y, tile = tile_type})
+      if (tile.name == 'cart') then
+        tile.cart_direction = cart_direction
+      end
+      self.tile_map[x][y] = tile
+      self:add(tile)
+    end
+  end,
+  add_tile_row = function(self, y)
+    self.last_row_added_y = y
+    for x=0,7 do
+      if (self.tile_map[x][y] == nil) then
+        local tile = make_tile({x = x, y = y, player = self.player})
+        if (tile.name == 'cart') then
+          self:setup_cart(y)
+          return
+        else
+          self.tile_map[x][y] = tile
+          self:add(tile)
+        end
+      end
+    end
+  end,
+  add_tiles = function(self)
+    if (self.player.y + tiles_below == self.last_row_added_y) then
+      local y = self.last_row_added_y + 1
+      
+      self:add_tile_row(y)
+
+      for x=0,7 do
+        -- clean up tiles above the player out of view
+        local tile_to_remove = self.tile_map[x][self.player.y - 3]
+        self:remove(tile_to_remove)
+      end
+    end    
   end,
   update = function(self)
     self.iris:update()
@@ -437,6 +534,7 @@ game_scene = make_scene({
       -- TODO: stop music, play sfx
       return
     end
+
     if (btnp(1) and self.player.x < 7) then
       self.requested_move = direction_right
     elseif (btnp(0) and self.player.x > 0) then
@@ -445,23 +543,21 @@ game_scene = make_scene({
       self.requested_move = direction_down
     end
 
-    self:try_move()
-
-    if (self.player.y + tiles_below == self.last_tile_placed.y) then
-      local y = self.last_tile_placed.y + 1
-      for x=0,7 do
-        local tile = make_tile({x = x, y = y, player = self.player})
-        self.tile_map[x][y] = tile
-        self:add(tile)
-        self.last_tile_placed = tile
-      end
-
-      for x=0,7 do
-        -- clean up tiles above the player out of view
-        local tile_to_remove = self.tile_map[x][self.player.y - 3]
-        self:remove(tile_to_remove)
+    if (self.player.tool.name == 'cart') then
+      if (self.cart_move_counter == 0) then
+        self.player:drop_tool()
+      else
+        self.requested_move = self.player.cart_direction
       end
     end
+
+    local moved = self:try_move()
+
+    if (moved and self.cart_move_counter and self.cart_move_counter > 0) then
+      self.cart_move_counter -= 1
+    end
+
+    self:add_tiles()
 
     current_meters = self.player.y
     current_gold = self.gold_amount
