@@ -139,6 +139,7 @@ function make_player()
       self.tool_use_percent = self.tool_uses / self.tool.uses
       if (self.tool_uses <= 0) then
         self:drop_tool()
+        sfx(19)
       end
     end,
     set_tool = function(self, tool)
@@ -430,10 +431,12 @@ game_scene = make_scene({
       if (hit_tile.strength <= 0) then
         if (hit_tile.gold_amount) then
           self.gold_amount += hit_tile.gold_amount
+          sfx(15)
         end
 
         if (hit_tile.clock_add) then
-          self.count_down += hit_tile.clock_add 
+          self.count_down += hit_tile.clock_add
+          sfx(16)
         end
 
         if (hit_tile.tool) then
@@ -442,6 +445,7 @@ game_scene = make_scene({
             self.cart_move_counter = 8
             self.player.cart_direction = hit_tile.cart_direction
           end
+          sfx(17)
         end
 
         self:remove(hit_tile)
@@ -454,6 +458,7 @@ game_scene = make_scene({
           dust_y += 16
         end
         self.player:dig(x,y)
+        sfx(random_one({0,1,2}))
         make_dust(self, x * 16 + 8, dust_y, hit_tile.color)
       end
     end
@@ -531,7 +536,8 @@ game_scene = make_scene({
     end
     if (self.count_down == 0) then
       self.times_up = true
-      -- TODO: stop music, play sfx
+      music(-1)
+      sfx(18)
       return
     end
 
