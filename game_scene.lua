@@ -373,9 +373,12 @@ function make_tile(o)
     tile = choose_tile(o.player)
   end
 
+  local color = tile.color
+
   local gold_amount = nil
   if (tile.has_gold) then
     gold_amount = random_one(tile.gold_amounts)
+    color = gold_amount_palette[gold_amount][1]
   end
 
   return {
@@ -386,7 +389,7 @@ function make_tile(o)
     tool = tile.tool,
     clock_add = tile.clock_add,
     make_dust = tile.make_dust,
-    color = tile.color,
+    color = color,
     sprites = tile.sprites,
     sprite = tile.sprite,
     flip_x = tile.rnd_flip and rnd(1) < 0.5,
