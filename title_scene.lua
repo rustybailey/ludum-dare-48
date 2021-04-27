@@ -151,5 +151,6 @@ title_scene = make_scene({
         center_print("press z or x to start", 80, 7)
       end
     end
+    print("1.0.1", 107, 0, 5)
   end
 })
